@@ -38,14 +38,19 @@ func (c Controller) handleGetTravelBestRoute(ctx echo.Context) error {
 
 	var err resterrors.RestErr
 
-	var vm viewmodel.TravelRequest
-	parseErr := ctx.Bind(&vm)
+	var input viewmodel.TravelRequest
+	parseErr := ctx.Bind(&input)
 	if parseErr != nil {
 		err = resterrors.NewBadRequestError("Invalid body request")
 		return ctx.JSON(err.StatusCode(), err)
 	}
 
-	bestRoute, err := c.travelService.GetBestRoute(vm.WhereFrom, vm.WhereTo)
+	if input.WhereFrom == "" || input.WhereTo == "" {
+		err = resterrors.NewBadRequestError("Invalid body request")
+		return ctx.JSON(err.StatusCode(), err)
+	}
+
+	bestRoute, err := c.travelService.GetBestRoute(input.WhereFrom, input.WhereTo)
 	if err != nil {
 		return ctx.JSON(err.StatusCode(), err)
 	}
