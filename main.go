@@ -17,10 +17,12 @@ func main() {
 	svc := service.New()
 	svm := service.NewServiceManager()
 
-	defer os.Exit(0)
-	if len(os.Args) > 0 {
-		svm.CommandLineService(svc).RunCLI()
-		return
+	if len(os.Args) > 1 {
+		defer os.Exit(0)
+		if os.Args[1] == "cli" {
+			svm.CommandLineService(svc).RunCLI()
+			return
+		}
 	}
 
 	server := server.InitServer(svc, svm)
@@ -35,5 +37,4 @@ func main() {
 	if err := server.Start(":" + port); err != nil {
 		panic(err)
 	}
-
 }
