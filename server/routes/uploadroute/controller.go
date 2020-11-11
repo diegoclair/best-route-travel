@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/diegoclair/best-route-travel/domain"
 	"github.com/diegoclair/best-route-travel/domain/contract"
 	"github.com/diegoclair/go_utils-lib/logger"
 	"github.com/diegoclair/go_utils-lib/resterrors"
@@ -46,7 +45,7 @@ func (s *Controller) handlePrescriptionUpload(c echo.Context) error {
 
 	userUUID := c.Param("user_uuid")
 
-	saveErr := s.uploadService.SaveFileForUser(c, file, userUUID, domain.TypePrescriptionFile)
+	saveErr := s.uploadService.SaveFileForUser(c, file, userUUID, "prescriptions")
 	if saveErr != nil {
 		return c.JSON(saveErr.StatusCode(), saveErr)
 	}

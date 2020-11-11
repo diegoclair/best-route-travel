@@ -5,7 +5,6 @@ import (
 	"mime/multipart"
 	"os"
 
-	"github.com/diegoclair/best-route-travel/domain"
 	"github.com/diegoclair/best-route-travel/domain/contract"
 	"github.com/diegoclair/go_utils-lib/logger"
 	"github.com/diegoclair/go_utils-lib/resterrors"
@@ -16,7 +15,6 @@ type uploadService struct {
 	svc *Service
 }
 
-//newUploadService return a new instance of the service
 func newUploadService(svc *Service) contract.UploadService {
 	return &uploadService{
 		svc: svc,
@@ -28,7 +26,7 @@ func (s *uploadService) SaveFileForUser(c echo.Context, file *multipart.FileHead
 	var path string
 
 	// Upload the file to specific destination.
-	if fileType == domain.TypePrescriptionFile {
+	if fileType == "prescriptions" {
 		path = "upload/" + userUUID + "/prescriptions"
 	}
 

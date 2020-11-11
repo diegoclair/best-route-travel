@@ -18,6 +18,7 @@ func New() *Service {
 type Manager interface {
 	UserService(svc *Service) contract.UserService
 	UploadService(svc *Service) contract.UploadService
+	CommandLineService(svc *Service) contract.CommandLineService
 }
 
 type serviceManager struct {
@@ -35,4 +36,8 @@ func (s *serviceManager) UserService(svc *Service) contract.UserService {
 
 func (s *serviceManager) UploadService(svc *Service) contract.UploadService {
 	return newUploadService(svc)
+}
+
+func (s *serviceManager) CommandLineService(svc *Service) contract.CommandLineService {
+	return newCommandLineService(svc)
 }

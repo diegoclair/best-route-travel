@@ -1,23 +1,39 @@
 package main
 
+import (
+	"os"
+
+	"github.com/diegoclair/best-route-travel/server"
+	"github.com/diegoclair/best-route-travel/service"
+	"github.com/diegoclair/go_utils-lib/logger"
+)
+
 // PORT is the default port to start the application
 const PORT string = "3000"
 
 func main() {
-	// logger.Info("Reading the initial configs...")
+	logger.Info("Reading the initial configs...")
 
-	// svc := service.New()
-	// server := server.InitServer(svc)
-	// logger.Info("About to start the application...")
+	svc := service.New()
+	svm := service.NewServiceManager()
 
-	// port := os.Getenv("PORT")
+	defer os.Exit(0)
+	if len(os.Args) > 0 {
+		svm.CommandLineService(svc).RunCLI()
+		return
+	}
 
-	// if port == "" {
-	// 	port = PORT
-	// }
+	server := server.InitServer(svc, svm)
+	logger.Info("About to start the application...")
 
-	// if err := server.Start(":" + port); err != nil {
-	// 	panic(err)
-	// }
-	comandLineInterface()
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = PORT
+	}
+
+	if err := server.Start(":" + port); err != nil {
+		panic(err)
+	}
+
 }

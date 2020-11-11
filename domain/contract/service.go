@@ -21,3 +21,7 @@ type UserService interface {
 type UploadService interface {
 	SaveFileForUser(c echo.Context, file *multipart.FileHeader, userUUID, fileType string) (restErr resterrors.RestErr)
 }
+
+type CommandLineService interface {
+	RunCLI()
+}

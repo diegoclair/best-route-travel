@@ -15,4 +15,4 @@ gin-bin
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-./best-route-travel
+best-route-travel

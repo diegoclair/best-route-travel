@@ -17,9 +17,9 @@ type controller struct {
 }
 
 //InitServer to initialize the server
-func InitServer(svc *service.Service) *echo.Echo {
+func InitServer(svc *service.Service, svm service.Manager) *echo.Echo {
 	mapper := mapper.New()
-	svm := service.NewServiceManager()
+
 	srv := echo.New()
 
 	userService := svm.UserService(svc)
