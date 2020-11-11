@@ -8,13 +8,9 @@ import (
 	"github.com/labstack/echo"
 )
 
-// PingService holds a ping service operations
-type PingService interface {
-}
-
-// UserService holds a user service operations
-type UserService interface {
-	SignIn(user entity.User) (entity.User, resterrors.RestErr)
+// TravelService holds a travel service operations
+type TravelService interface {
+	GetBestRoute(whereFrom, whereTo string) (bestRoute entity.BestRoute, err resterrors.RestErr)
 }
 
 // UploadService holds a upload service operations
@@ -22,6 +18,7 @@ type UploadService interface {
 	SaveFileForUser(c echo.Context, file *multipart.FileHeader, userUUID, fileType string) (restErr resterrors.RestErr)
 }
 
+// CommandLineService holds a cli service operations
 type CommandLineService interface {
 	RunCLI()
 }
