@@ -21,4 +21,5 @@ type UploadService interface {
 // CommandLineService holds a cli service operations
 type CommandLineService interface {
 	RunCLI()
+	InputNewFile(fileName string)
 }

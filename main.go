@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/diegoclair/best-route-travel/server"
 	"github.com/diegoclair/best-route-travel/service"
@@ -12,13 +13,16 @@ import (
 const PORT string = "3000"
 
 func main() {
-	logger.Info("Reading the initial configs...")
 
 	svc := service.New()
 	svm := service.NewServiceManager()
 
 	if len(os.Args) > 1 {
 		defer os.Exit(0)
+		if strings.Contains(os.Args[1], ".csv") {
+			svm.CommandLineService(svc, svm.TravelService(svc)).InputNewFile(os.Args[1])
+			return
+		}
 		if os.Args[1] == "cli" {
 			svm.CommandLineService(svc, svm.TravelService(svc)).RunCLI()
 			return

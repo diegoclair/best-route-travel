@@ -3,6 +3,8 @@ package service
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -48,6 +50,29 @@ func (cli *commandLine) RunCLI() {
 		}
 		fmt.Printf("best route: %s > $%v", bestRoute.Route, bestRoute.Price)
 	}
+}
+
+func (cli *commandLine) InputNewFile(inputFileName string) {
+
+	sourceFile, err := os.Open(inputFileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sourceFile.Close()
+
+	// Create new file
+	newFile, err := os.Create("possible_routes.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer newFile.Close()
+
+	bytesCopied, err := io.Copy(newFile, sourceFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Copied %d bytes with success!", bytesCopied)
+	return
 }
 
 func (cli *commandLine) printUsage() {

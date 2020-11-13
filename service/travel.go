@@ -27,7 +27,7 @@ func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entit
 
 	//TODO: arquivo precisa ser lido através do console
 	//TODO: independente do nome que o arquivo tiver, salvar com um nome padrão, dessa forma sempre vou conseguir ler no readfile()
-	//TODO:
+	//TODO: é importante que o arquivo esteja com preenchido corretamente
 	filedata, err := s.readFile()
 	if err != nil {
 		logger.Error("Error to read the file: ", err)
@@ -92,7 +92,7 @@ func (s *travelService) addVertexAndArcs(routes []entity.Filedata, graph *dijkst
 
 func (s *travelService) readFile() (routes []entity.Filedata, err error) {
 
-	file, err := os.Open("input-file.csv")
+	file, err := os.Open("possible_routes.csv")
 	if err != nil {
 		return routes, err
 	}
