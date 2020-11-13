@@ -3,7 +3,6 @@ package service
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -12,12 +11,14 @@ import (
 )
 
 type commandLine struct {
-	svc *Service
+	svc           *Service
+	travelService contract.TravelService
 }
 
-func newCommandLineService(svc *Service) contract.CommandLineService {
+func newCommandLineService(svc *Service, travelService contract.TravelService) contract.CommandLineService {
 	return &commandLine{
-		svc: svc,
+		svc:           svc,
+		travelService: travelService,
 	}
 }
 
@@ -39,25 +40,13 @@ func (cli *commandLine) RunCLI() {
 			continue
 		}
 
-		from, to := cli.getRoutes(input)
-
-		fmt.Println(from, to)
-
-		time.Sleep(700 * time.Millisecond)
-		fmt.Print("\n\nPress x and hit enter to try again or any other key to finish the program: ")
-		reader := bufio.NewReader(os.Stdin)
-		char, _, err := reader.ReadRune()
+		whereFrom, whereTo := cli.getRoutes(input)
+		bestRoute, err := cli.travelService.GetBestRoute(strings.ToUpper(whereFrom), strings.ToUpper(whereTo))
 		if err != nil {
-			log.Fatal("Error to process the input: ", err)
-		}
-
-		switch char {
-		case 'x':
-			continue
-		default:
-			fmt.Println("Thank you!")
+			fmt.Print("Error to get best route, contact the admin\n")
 			return
 		}
+		fmt.Printf("best route: %s > $%v", bestRoute.Route, bestRoute.Price)
 	}
 }
 

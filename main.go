@@ -20,7 +20,7 @@ func main() {
 	if len(os.Args) > 1 {
 		defer os.Exit(0)
 		if os.Args[1] == "cli" {
-			svm.CommandLineService(svc).RunCLI()
+			svm.CommandLineService(svc, svm.TravelService(svc)).RunCLI()
 			return
 		}
 	}

@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/IQ-tech/go-mapper v1.0.5
+	github.com/RyanCarrier/dijkstra v1.0.0
 	github.com/diegoclair/go_utils-lib v1.1.3
 	github.com/gin-gonic/gin v1.6.3
 	github.com/labstack/echo v3.3.10+incompatible
