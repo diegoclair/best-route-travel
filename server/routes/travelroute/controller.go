@@ -7,6 +7,7 @@ import (
 
 	"github.com/IQ-tech/go-mapper"
 	"github.com/diegoclair/best-route-travel/domain/contract"
+	"github.com/diegoclair/best-route-travel/domain/entity"
 	"github.com/diegoclair/best-route-travel/server/viewmodel"
 	"github.com/diegoclair/go_utils-lib/logger"
 	"github.com/diegoclair/go_utils-lib/resterrors"
@@ -63,7 +64,7 @@ func (c Controller) handleGetTravelBestRoute(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response)
 }
 
-func handleAddNewRoute(ctx echo.Context) error {
+func (c Controller) handleAddNewRoute(ctx echo.Context) error {
 	var err resterrors.RestErr
 
 	var input viewmodel.TravelRequest
@@ -73,10 +74,26 @@ func handleAddNewRoute(ctx echo.Context) error {
 		return ctx.JSON(err.StatusCode(), err)
 	}
 
-	if input.WhereFrom == "" || input.WhereTo == "" {
+	if input.WhereFrom == "" || input.WhereTo == "" || input.Price == 0 || input.WhereFrom == input.WhereTo {
 		err = resterrors.NewBadRequestError("Invalid body request")
 		return ctx.JSON(err.StatusCode(), err)
 	}
 
-	return nil
+	input.WhereFrom = strings.ToUpper(input.WhereFrom)
+	input.WhereTo = strings.ToUpper(input.WhereTo)
+
+	route := entity.Route{}
+	mapperErr := c.mapper.From(input).To(&route)
+	if mapperErr != nil {
+		logger.Error("Error to mapper input request to route entity: ", mapperErr)
+		err = resterrors.NewInternalServerError("Mapper response errror")
+		return ctx.JSON(err.StatusCode(), err)
+	}
+
+	err = c.travelService.AddNewRoute(route)
+	if err != nil {
+		return ctx.JSON(err.StatusCode(), err)
+	}
+
+	return ctx.NoContent(http.StatusNoContent)
 }

@@ -4,6 +4,7 @@ package viewmodel
 type TravelRequest struct {
 	WhereFrom string `json:"where_from,omitempty"`
 	WhereTo   string `json:"where_to,omitempty"`
+	Price     int64  `json:"price,omitempty"`
 }
 
 // TravelResponse viewmodel to handle a rest response

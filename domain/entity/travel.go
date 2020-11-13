@@ -6,8 +6,8 @@ type BestRoute struct {
 	Price int64  `json:"price,omitempty"`
 }
 
-// Filedata entity
-type Filedata struct {
+// Route entity
+type Route struct {
 	WhereFrom string `json:"where_from,omitempty"`
 	WhereTo   string `json:"where_to,omitempty"`
 	Price     int64  `json:"price,omitempty"`

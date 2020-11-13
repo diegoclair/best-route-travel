@@ -17,7 +17,6 @@ func New() *Service {
 //Manager defines the services aggregator interface
 type Manager interface {
 	TravelService(svc *Service) contract.TravelService
-	UploadService(svc *Service) contract.UploadService
 	CommandLineService(svc *Service, travelService contract.TravelService) contract.CommandLineService
 }
 
@@ -32,10 +31,6 @@ func NewServiceManager() Manager {
 
 func (s *serviceManager) TravelService(svc *Service) contract.TravelService {
 	return newTravelService(svc)
-}
-
-func (s *serviceManager) UploadService(svc *Service) contract.UploadService {
-	return newUploadService(svc)
 }
 
 func (s *serviceManager) CommandLineService(svc *Service, travelService contract.TravelService) contract.CommandLineService {

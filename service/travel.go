@@ -23,6 +23,9 @@ func newTravelService(svc *Service) contract.TravelService {
 	}
 }
 
+// FiledataPath is the file name that are used to control the routes list
+const FiledataPath string = "possible_routes.csv"
+
 func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entity.BestRoute, restErr resterrors.RestErr) {
 
 	//TODO: arquivo precisa ser lido através do console
@@ -60,7 +63,7 @@ func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entit
 	return bestRoute, nil
 }
 
-func (s *travelService) addVertexAndArcs(routes []entity.Filedata, graph *dijkstra.Graph) (placeIDs map[string]int, placeValues map[int]string) {
+func (s *travelService) addVertexAndArcs(routes []entity.Route, graph *dijkstra.Graph) (placeIDs map[string]int, placeValues map[int]string) {
 
 	placeIDs = make(map[string]int, 0)
 	placeValues = make(map[int]string, 0)
@@ -90,21 +93,16 @@ func (s *travelService) addVertexAndArcs(routes []entity.Filedata, graph *dijkst
 	return
 }
 
-func (s *travelService) readFile() (routes []entity.Filedata, err error) {
+func (s *travelService) readFile() (routes []entity.Route, err error) {
 
-	file, err := os.Open("possible_routes.csv")
-	if err != nil {
-		return routes, err
-	}
-	rows, err := csv.NewReader(file).ReadAll()
-	file.Close()
+	rows, err := s.getFileRows()
 	if err != nil {
 		return routes, err
 	}
 
 	for i := 0; i < len(rows); i++ {
 		price, _ := strconv.Atoi(rows[i][2])
-		row := entity.Filedata{
+		row := entity.Route{
 			WhereFrom: rows[i][0],
 			WhereTo:   rows[i][1],
 			Price:     int64(price),
@@ -115,13 +113,25 @@ func (s *travelService) readFile() (routes []entity.Filedata, err error) {
 	return routes, nil
 }
 
-func (s *travelService) parametersIsValid(routes []entity.Filedata, whereFrom, whereTo string) bool {
+func (s *travelService) getFileRows() (rows [][]string, err error) {
+	file, err := os.Open(FiledataPath)
+	if err != nil {
+		return rows, err
+	}
+	defer file.Close()
+	rows, err = csv.NewReader(file).ReadAll()
+	if err != nil {
+		return rows, err
+	}
+	return
+}
+
+func (s *travelService) parametersIsValid(routes []entity.Route, whereFrom, whereTo string) bool {
 	var whereFromIsValid, whereToIsValid bool
 
 	for i := 0; i < len(routes); i++ {
 		if routes[i].WhereFrom == whereFrom {
 			whereFromIsValid = true
-			continue
 		}
 		if routes[i].WhereTo == whereTo {
 			whereToIsValid = true
@@ -131,4 +141,26 @@ func (s *travelService) parametersIsValid(routes []entity.Filedata, whereFrom, w
 		}
 	}
 	return whereFromIsValid && whereToIsValid
+}
+
+func (s *travelService) AddNewRoute(route entity.Route) (restErr resterrors.RestErr) {
+
+	file, err := os.OpenFile(FiledataPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		logger.Error("Error to create the file: ", err)
+		return resterrors.NewInternalServerError("Error to add new route")
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	//writer.Write([]string{})
+	err = writer.Write([]string{route.WhereFrom, route.WhereTo, strconv.Itoa(int(route.Price))})
+	if err != nil {
+		logger.Error("Error to write the new route into file: ", err)
+		return resterrors.NewInternalServerError("Error to add new route")
+	}
+
+	return nil
 }

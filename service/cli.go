@@ -2,6 +2,7 @@ package service
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
@@ -66,6 +67,11 @@ func (cli *commandLine) InputNewFile(inputFileName string) {
 		log.Fatal(err)
 	}
 	defer newFile.Close()
+
+	//write a empty line at the end of the file to avoid format problems when use the POST to add new routes
+	writer := csv.NewWriter(newFile)
+	defer writer.Flush()
+	writer.Write([]string{})
 
 	bytesCopied, err := io.Copy(newFile, sourceFile)
 	if err != nil {

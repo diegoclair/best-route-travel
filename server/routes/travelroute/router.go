@@ -18,5 +18,6 @@ func NewRouter(ctrl *Controller, router *echo.Echo) *TravelRouter {
 
 // RegisterRoutes is a routers map of travel requests
 func (r *TravelRouter) RegisterRoutes() {
-	r.router.GET("/travel/bestroute/:where_from/:where_to", r.ctrl.handleGetTravelBestRoute)
+	r.router.GET("/travel/bestroute/:where_from/:where_to/", r.ctrl.handleGetTravelBestRoute)
+	r.router.POST("/travel/bestroute/", r.ctrl.handleAddNewRoute)
 }
