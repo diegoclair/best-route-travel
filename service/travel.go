@@ -23,33 +23,11 @@ func newTravelService(svc *Service) contract.TravelService {
 	}
 }
 
-func (s *travelService) readFile() (routes []entity.Filedata, err error) {
-
-	file, err := os.Open("input-file.csv")
-	if err != nil {
-		return routes, err
-	}
-	rows, err := csv.NewReader(file).ReadAll()
-	file.Close()
-	if err != nil {
-		return routes, err
-	}
-
-	for i := 0; i < len(rows); i++ {
-		price, _ := strconv.Atoi(rows[i][2])
-		row := entity.Filedata{
-			WhereFrom: rows[i][0],
-			WhereTo:   rows[i][1],
-			Price:     int64(price),
-		}
-
-		routes = append(routes, row)
-	}
-	return routes, nil
-}
-
 func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entity.BestRoute, restErr resterrors.RestErr) {
 
+	//TODO: arquivo precisa ser lido através do console
+	//TODO: independente do nome que o arquivo tiver, salvar com um nome padrão, dessa forma sempre vou conseguir ler no readfile()
+	//TODO:
 	filedata, err := s.readFile()
 	if err != nil {
 		logger.Error("Error to read the file: ", err)
@@ -57,7 +35,12 @@ func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entit
 	}
 
 	graph := dijkstra.NewGraph()
-	placeIDs, placeValues := s.AddVertexAndArcs(filedata, graph)
+	placeIDs, placeValues := s.addVertexAndArcs(filedata, graph)
+
+	if !s.parametersIsValid(filedata, whereFrom, whereTo) {
+		logger.Error("Some route don't exists: from: "+whereFrom+" - to: "+whereTo, nil)
+		return bestRoute, resterrors.NewBadRequestError("Some route don't exists")
+	}
 
 	best, err := graph.Shortest(placeIDs[whereFrom], placeIDs[whereTo])
 	if err != nil {
@@ -77,7 +60,7 @@ func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entit
 	return bestRoute, nil
 }
 
-func (s *travelService) AddVertexAndArcs(routes []entity.Filedata, graph *dijkstra.Graph) (placeIDs map[string]int, placeValues map[int]string) {
+func (s *travelService) addVertexAndArcs(routes []entity.Filedata, graph *dijkstra.Graph) (placeIDs map[string]int, placeValues map[int]string) {
 
 	placeIDs = make(map[string]int, 0)
 	placeValues = make(map[int]string, 0)
@@ -105,4 +88,47 @@ func (s *travelService) AddVertexAndArcs(routes []entity.Filedata, graph *dijkst
 	}
 
 	return
+}
+
+func (s *travelService) readFile() (routes []entity.Filedata, err error) {
+
+	file, err := os.Open("input-file.csv")
+	if err != nil {
+		return routes, err
+	}
+	rows, err := csv.NewReader(file).ReadAll()
+	file.Close()
+	if err != nil {
+		return routes, err
+	}
+
+	for i := 0; i < len(rows); i++ {
+		price, _ := strconv.Atoi(rows[i][2])
+		row := entity.Filedata{
+			WhereFrom: rows[i][0],
+			WhereTo:   rows[i][1],
+			Price:     int64(price),
+		}
+
+		routes = append(routes, row)
+	}
+	return routes, nil
+}
+
+func (s *travelService) parametersIsValid(routes []entity.Filedata, whereFrom, whereTo string) bool {
+	var whereFromIsValid, whereToIsValid bool
+
+	for i := 0; i < len(routes); i++ {
+		if routes[i].WhereFrom == whereFrom {
+			whereFromIsValid = true
+			continue
+		}
+		if routes[i].WhereTo == whereTo {
+			whereToIsValid = true
+		}
+		if whereFromIsValid && whereToIsValid {
+			break
+		}
+	}
+	return whereFromIsValid && whereToIsValid
 }

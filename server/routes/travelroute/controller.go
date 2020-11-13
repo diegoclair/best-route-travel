@@ -2,6 +2,7 @@ package travelroute
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/IQ-tech/go-mapper"
@@ -38,19 +39,15 @@ func (c Controller) handleGetTravelBestRoute(ctx echo.Context) error {
 
 	var err resterrors.RestErr
 
-	var input viewmodel.TravelRequest
-	parseErr := ctx.Bind(&input)
-	if parseErr != nil {
-		err = resterrors.NewBadRequestError("Invalid body request")
+	whereFrom := ctx.Param("where_from")
+	whereTo := ctx.Param("where_to")
+
+	if whereFrom == "" || whereTo == "" {
+		err = resterrors.NewBadRequestError("Invalid parameters request")
 		return ctx.JSON(err.StatusCode(), err)
 	}
 
-	if input.WhereFrom == "" || input.WhereTo == "" {
-		err = resterrors.NewBadRequestError("Invalid body request")
-		return ctx.JSON(err.StatusCode(), err)
-	}
-
-	bestRoute, err := c.travelService.GetBestRoute(input.WhereFrom, input.WhereTo)
+	bestRoute, err := c.travelService.GetBestRoute(strings.ToUpper(whereFrom), strings.ToUpper(whereTo))
 	if err != nil {
 		return ctx.JSON(err.StatusCode(), err)
 	}
@@ -64,4 +61,22 @@ func (c Controller) handleGetTravelBestRoute(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, response)
+}
+
+func handleAddNewRoute(ctx echo.Context) error {
+	var err resterrors.RestErr
+
+	var input viewmodel.TravelRequest
+	parseErr := ctx.Bind(&input)
+	if parseErr != nil {
+		err = resterrors.NewBadRequestError("Invalid body request")
+		return ctx.JSON(err.StatusCode(), err)
+	}
+
+	if input.WhereFrom == "" || input.WhereTo == "" {
+		err = resterrors.NewBadRequestError("Invalid body request")
+		return ctx.JSON(err.StatusCode(), err)
+	}
+
+	return nil
 }

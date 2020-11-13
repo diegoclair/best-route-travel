@@ -8,6 +8,6 @@ type TravelRequest struct {
 
 // TravelResponse viewmodel to handle a rest response
 type TravelResponse struct {
-	Route string  `json:"route,omitempty"`
-	Price float32 `json:"price,omitempty"`
+	Route string `json:"route,omitempty"`
+	Price int64  `json:"price,omitempty"`
 }
