@@ -151,7 +151,6 @@ func (s *travelService) AddNewRoute(route entity.Route) (restErr resterrors.Rest
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	//writer.Write([]string{})
 	err = writer.Write([]string{route.WhereFrom, route.WhereTo, strconv.Itoa(int(route.Price))})
 	if err != nil {
 		logger.Error("Error to write the new route into file: ", err)
