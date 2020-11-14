@@ -92,13 +92,25 @@ func (s *travelService) addVertexAndArcs(routes []entity.Route, graph *dijkstra.
 
 func (s *travelService) readFile() (routes []entity.Route, err error) {
 
-	rows, err := s.getFileRows()
+	file, err := os.Open(FiledataPath)
+	if err != nil {
+		return routes, err
+	}
+	defer file.Close()
+	rows, err := csv.NewReader(file).ReadAll()
 	if err != nil {
 		return routes, err
 	}
 
+	return s.parseRowsToStruct(rows)
+}
+
+func (s *travelService) parseRowsToStruct(rows [][]string) (routes []entity.Route, err error) {
 	for i := 0; i < len(rows); i++ {
-		price, _ := strconv.Atoi(rows[i][2])
+		price, err := strconv.Atoi(rows[i][2])
+		if err != nil {
+			return routes, err
+		}
 		row := entity.Route{
 			WhereFrom: rows[i][0],
 			WhereTo:   rows[i][1],
@@ -108,19 +120,6 @@ func (s *travelService) readFile() (routes []entity.Route, err error) {
 		routes = append(routes, row)
 	}
 	return routes, nil
-}
-
-func (s *travelService) getFileRows() (rows [][]string, err error) {
-	file, err := os.Open(FiledataPath)
-	if err != nil {
-		return rows, err
-	}
-	defer file.Close()
-	rows, err = csv.NewReader(file).ReadAll()
-	if err != nil {
-		return rows, err
-	}
-	return
 }
 
 func (s *travelService) parametersIsValid(routes []entity.Route, whereFrom, whereTo string) bool {
