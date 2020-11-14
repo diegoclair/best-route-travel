@@ -30,7 +30,7 @@ GRU,ORL,56
 ORL,CDG,5
 SCL,ORL,20
 ```  
-It is *<b>WHERE FROM</b>*, *<b>WHERE TO</b>* and the *<b>PRICE</b>* of the route.  
+The format is:  *<b>WHERE FROM</b>*, *<b>WHERE TO</b>* and the *<b>PRICE</b>* of the the trip.  
   
 To do the input of the file, you just need to run `./mysolution <filename.csv>` where the *<filename.csv>* is the name of your file
 
@@ -81,5 +81,12 @@ With the [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest
   ```  
   If the request as process with success the response will be a 204 http status code without a body.  
   
+## 💻 Tech infos: 
+- The architecture of files and folders was based on domain driven design.
+- I tried to use the best pratices of development 
+  - Using interfaces and contract to not a create layers dependencies
+  - Principles of single responsability
+  - Unit tests
+
 :bowtie:
 <br><br>

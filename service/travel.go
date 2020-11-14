@@ -28,9 +28,6 @@ const FiledataPath string = "possible_routes.csv"
 
 func (s *travelService) GetBestRoute(whereFrom, whereTo string) (bestRoute entity.BestRoute, restErr resterrors.RestErr) {
 
-	//TODO: arquivo precisa ser lido através do console
-	//TODO: independente do nome que o arquivo tiver, salvar com um nome padrão, dessa forma sempre vou conseguir ler no readfile()
-	//TODO: é importante que o arquivo esteja com preenchido corretamente
 	filedata, err := s.readFile()
 	if err != nil {
 		logger.Error("Error to read the file: ", err)
